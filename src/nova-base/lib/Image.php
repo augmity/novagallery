@@ -167,6 +167,37 @@ class Image {
       $img->centerCrop(self::$width, self::$height);
     }
 
+    // Get the EXIF orientation metadata
+    $exifData = exif_read_data(self::$original);
+    $orientation = $exifData['Orientation'] ?? 1;
+
+    // Rotate and flip based on EXIF orientation
+    switch ($orientation) {
+      case 2: // Flipped horizontally
+          $img->flipHorizontally();
+          break;
+      case 3: // Rotated 180°
+          $img->rotate(180);
+          break;
+      case 4: // Flipped vertically
+          $img->flipVertically();
+          break;
+      case 5: // Rotated 90° clockwise and flipped horizontally
+          $img->rotate(90)->flipHorizontally();
+          break;
+      case 6: // Rotated 90° clockwise
+          $img->rotate(-90);
+          break;
+      case 7: // Rotated 90° counterclockwise and flipped horizontally
+          $img->rotate(-90)->flipHorizontally();
+          break;
+      case 8: // Rotated 90° counterclockwise
+          $img->rotate(90);
+          break;
+      // case 1: Normal (no action needed)
+    }
+
+
     // if cache is disabled, only stream
     if(!$cache){
       $img  ->output();
